@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Bridge - Dark Mode Practicum</title>
+
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #f2f5f9;
+      --surface: #ffffff;
+      --text: #243b53;
+      --muted: #52677d;
+      --accent: #087e8b;
+      --border: #d9e2ec;
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --background: #111827;
+      --surface: #1f2937;
+      --text: #e5edf5;
+      --muted: #b0becd;
+      --accent: #50c8bd;
+      --border: #3b485a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--background);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      transition: background-color .2s, color .2s;
+    }
+
+    main { max-width: 850px; margin: 30px auto; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    h1, h2 { color: var(--text); }
+
+    .theme-button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .card {
+      margin-top: 22px;
+      padding: 22px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .chart {
+      display: block;
+      width: 100%;
+      max-height: 210px;
+      margin-top: 15px;
+      background: var(--background);
+      border-radius: 8px;
+    }
+
+    @media (max-width: 550px) {
+      body { padding: 14px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body { transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <header class="topbar">
+      <div>
+        <h1>Finance Bridge</h1>
+        <p class="muted">Finance Planning and Investment Advisory</p>
+      </div>
+      <button class="theme-button" id="themeButton" type="button"
+              aria-pressed="false">
+        Switch to dark mode
+      </button>
+    </header>
+
+    <section class="card">
+      <h2>Financial Planning</h2>
+      <p class="muted">
+        Review financial goals and make informed plans for the future.
+      </p>
+
+      <svg class="chart" viewBox="0 0 700 200" role="img"
+           aria-label="Illustration of a rising financial chart">
+        <polyline points="30,160 150,125 260,140 375,85 500,100 660,35"
+          fill="none" stroke="var(--accent)" stroke-width="8"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </section>
+
+    <p class="muted" id="themeStatus" aria-live="polite"></p>
+  </main>
+
+  <script>
+    const storageKey = "financeBridgeTheme";
+    const themeButton = document.getElementById("themeButton");
+    const themeStatus = document.getElementById("themeStatus");
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function applyTheme(theme, saveChoice) {
+      document.documentElement.dataset.theme = theme;
+      const isDark = theme === "dark";
+
+      themeButton.textContent = isDark
+        ? "Switch to light mode"
+        : "Switch to dark mode";
+
+      themeButton.setAttribute("aria-pressed", String(isDark));
+      themeStatus.textContent = "Current theme: " + theme + " mode.";
+
+      if (saveChoice) {
+        localStorage.setItem(storageKey, theme);
+      }
+    }
+
+    const savedTheme = localStorage.getItem(storageKey);
+    applyTheme(savedTheme || (systemTheme.matches ? "dark" : "light"), false);
+
+    themeButton.addEventListener("click", () => {
+      const nextTheme =
+        document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      applyTheme(nextTheme, true);
+    });
+
+    systemTheme.addEventListener("change", event => {
+      if (!localStorage.getItem(storageKey)) {
+        applyTheme(event.matches ? "dark" : "light", false);
+      }
+    });
+  </script>
+</body>
+</html>
